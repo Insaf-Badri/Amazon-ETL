@@ -98,6 +98,7 @@ def get_availability(soup):
 	return available	
 
 # Function calls to display all necessary product information
+print("the data is ")
 print("Product Title =", get_title(soup))
 print("Product Price =", get_price(soup))
 print("Product Rating =", get_rating(soup))
