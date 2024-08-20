@@ -126,4 +126,4 @@ if __name__ == '__main__':
     #Drop rows with NaN value in title column 
     amazon_df = amazon_df.dropna(subset=['title'])
     # hnaya dart 2 dyal file jarabthom 
-    amazon_df.to_csv("Amazon_data.csv", header=True, index=False, sep=';')
+    amazon_df.to_csv("Amazon_data2.csv", header=True, index=False)
