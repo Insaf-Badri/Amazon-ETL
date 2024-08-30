@@ -2,6 +2,10 @@ from bs4 import BeautifulSoup
 import requests
 import pandas as pd 
 import numpy as np
+import os
+from dotenv import load_dotenv
+import psycopg2
+from sqlalchemy import create_engine
 
 
 # Fuction to extract product's title 
@@ -77,17 +81,17 @@ def get_availability(soup):
 		available = available.find("span").string.strip()
 
 	except AttributeError:
-		available = ""	
+		available = "NOT AVAILABLE"
 
 	return available	
 
 
 if __name__ == '__main__':
     HEADERS = ({'User-Agent':
-                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36',
-                'Accept-Language': 'en-US, en;q=0.5'})
+    'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36',
+    'Accept-Language': 'en-US, en;q=0.5'})
 
-    URL = "https://www.amazon.com/s?k=laptop&crid=73UWUS1S13Y9&sprefix=laptop%2Caps%2C247&ref=nb_sb_noss_1"
+    URL = "https://www.amazon.com/s?k=iphone+15+pro+max+case&crid=PF7JGHUOD8NI&sprefix=iphone%2Caps%2C529&ref=nb_sb_ss_pltr-xclick_7_6"
     page = requests.get(URL, headers=HEADERS)
     soup = BeautifulSoup(page.content, 'html.parser')
 
@@ -125,5 +129,28 @@ if __name__ == '__main__':
     amazon_df['title']= amazon_df['title'].replace('', np.nan)
     #Drop rows with NaN value in title column 
     amazon_df = amazon_df.dropna(subset=['title'])
+
+    # establish connections to postgresql db
+    conn_string = 'postgresql://postgres:2002@127.0.0.1/amazon'
+
+    try:
+        # Create SQLAlchemy engine and establish connection
+        db = create_engine(conn_string)
+        # Converting DataFrame to SQL
+        amazon_df.to_sql('data', db, if_exists='append', index=False)
+        print("Data inserted successfully.")
+
+        """# Fetching all rows to verify insertion
+        with db.connect() as conn:
+            result = conn.execute('SELECT * FROM  data')
+            for row in result:
+                print(row)
+"""
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+    finally:
+        db.dispose()
+
     # hnaya dart 2 dyal file jarabthom 
-    amazon_df.to_csv("Amazon_data2.csv", header=True, index=False)
+    #amazon_df.to_csv("Amazon_data.csv", header=True, index=False)
