@@ -87,9 +87,10 @@ def get_availability(soup):
 
 
 if __name__ == '__main__':
-    HEADERS = ({'User-Agent':
-    'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36',
-    'Accept-Language': 'en-US, en;q=0.5'})
+    load_dotenv()
+
+    user_agent=os.getenv('USER_AGENT')
+    HEADERS = ({'User-Agent':user_agent,'Accept-Language': 'en-US, en;q=0.5'})
 
     URL = "https://www.amazon.com/s?k=iphone+15+pro+max+case&crid=PF7JGHUOD8NI&sprefix=iphone%2Caps%2C529&ref=nb_sb_ss_pltr-xclick_7_6"
     page = requests.get(URL, headers=HEADERS)
@@ -123,15 +124,23 @@ if __name__ == '__main__':
         d['count_review'].append(get_review_count(new_soup))
         d['availability'].append(get_availability(new_soup))
 
-    # Store our data into csv file   
     amazon_df = pd.DataFrame.from_dict(d)
     #Replace the empty String with NaN in titile column
     amazon_df['title']= amazon_df['title'].replace('', np.nan)
     #Drop rows with NaN value in title column 
     amazon_df = amazon_df.dropna(subset=['title'])
-
+    #store our data into csv file 
+    amazon_df.to_csv("Amazon_data.csv", header=True, index=False)
+    
     # establish connections to postgresql db
-    conn_string = 'postgresql://postgres:2002@127.0.0.1/amazon'
+    db_name = os.getenv('DB_NAME')
+    db_user = os.getenv('DB_USER')
+    db_password = os.getenv('DB_PASSWORD')
+    db_host = os.getenv('DB_HOST')
+    db_port = os.getenv('DB_PORT',5432)
+
+    #conn_string = 'postgresql://db_user:db_password@db_host/db_port'
+    conn_string = f'postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}'
 
     try:
         # Create SQLAlchemy engine and establish connection
@@ -148,9 +157,7 @@ if __name__ == '__main__':
 """
     except Exception as e:
         print(f"An error occurred: {e}")
+    
+   
 
-    finally:
-        db.dispose()
 
-    # hnaya dart 2 dyal file jarabthom 
-    #amazon_df.to_csv("Amazon_data.csv", header=True, index=False)
