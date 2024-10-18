@@ -30,4 +30,4 @@ transforming it into a usable format, and loading it into a  Postgres database. 
   ### Part 2 : Transform Data (Cleaning)
   After extraction, the data may require cleaning or formatting,using `Pandas` and `Numpy`
   ### Part 3 : Load Data into PostgreSQL
-  The final step is to load the cleaned data from the CSV file into the PostgreSQL database using `psycopg2`
+  The final step is to load the cleaned data  into the PostgreSQL database using `psycopg2`
