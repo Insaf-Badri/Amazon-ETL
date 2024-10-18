@@ -4,7 +4,7 @@
 
 This ETL (Extract, Transform, Load) pipeline is designed to automate the process of extracting data from Amazon website ,
 transforming it into a usable format, and loading it into a  Postgres database. This project is built with Python, leveraging libraries such as `requests`, `BeautifulSoup`, `pandas`, and `psycopg2` (for PostgreSQL). 
-![Alt text](D:\Download\workflow)
+![workflow](workflow.png)
 
 ## Table of Contents
 - [Technologies Used](#technologies-used)
